@@ -16,7 +16,6 @@ export default {
     HelloWorld
   },
   mounted() {
-    console.log(navigator.userAgent)
     window.addEventListener("keyboardFocus", () => {
       console.log("focus");
     });

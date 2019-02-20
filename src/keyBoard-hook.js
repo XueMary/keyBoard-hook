@@ -136,5 +136,11 @@
     }
   }
 
-  new keyboardHook()
+  function isMobile () {
+    return /(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)
+  }
+
+  if(isMobile()){
+    new keyboardHook()
+  }
 })()
