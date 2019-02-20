@@ -10,6 +10,7 @@
       this.isShowKeyBoard = false;
       this.isResize = false;
       this.isClick = false
+      this.clickTimeOut = null
       this.init();
     }
 
@@ -39,14 +40,22 @@
 
     initClick() {
       let _this = this;
-      let clickFn = function (e) {
+      function changeClick () {
+        clearTimeout(_this.clickTimeOut)
         _this.isClick = true
+        _this.clickTimeOut = setTimeout(() => {
+          _this.isClick = false
+        }, 200);
+      }
+      let clickFn = function (e) {
+        changeClick();
         let isInput = _this.isInput(e);
         if (!isInput) return;
         setTimeout(function () {
+          window.removeEventListener("click", clickFn);
           if (!_this.isResize) {
             clickFn = function (e) {
-              _this.isClick = true
+              changeClick()
               let isInput = _this.isInput(e);
               if (isInput) {
                 _this.clickFocus();
@@ -61,7 +70,7 @@
           }
         }, 500);
       };
-      window.addEventListener("click", clickFn, { once: true });
+      window.addEventListener("click", clickFn);
     }
 
     resizeF() { }
@@ -69,6 +78,7 @@
     resizeFn(_this, fn) {
       return function () {
         if(_this.isClick){
+          clearTimeout(_this.clickTimeOut)
           _this.isClick = false
           fn.call(_this);
         }
