@@ -1,6 +1,9 @@
 {
   "name": "key-board-hook",
   "version": "1.0.0",
+  "author": "xuejihong",
+  "license": "MIT",
+  "description": "virtual keyboard show/hidden event hook",
   "main": "dist/key-board-hook.umd.js",
   "module": "dist/key-board-hook.esm.js",
   "unpkg": "dist/key-board-hook.min.js",
@@ -14,5 +17,21 @@
     "rollup": "^1.1.2",
     "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-uglify": "^6.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XueMary/keyBoard-hook.git"
+  },
+  "keywords": [
+    "event",
+    "events",
+    "keyBoard",
+    "javascript",
+    "hooks"
+  ],
+  "bugs": {
+    "url": "https://github.com/XueMary/keyBoard-hook/issues",
+    "email": "bart163x@gmail.com"
+  },
+  "homepage": "https://github.com/XueMary/keyBoard-hook#readme"
 }
