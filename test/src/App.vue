@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <input>
+    <input>
+    <div>{{text}}</div>
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
@@ -15,12 +17,17 @@ export default {
   components: {
     HelloWorld
   },
+  data(){
+    return{
+      text:''
+    }
+  },
   mounted() {
     window.addEventListener("keyboardFocus", () => {
-      console.log("keyboardFocus");
+      this.text = "keyboardFocus"
     });
     window.addEventListener("keyboardBlur", () => {
-      console.log("keyboardBlur");
+       this.text = "keyboardBlur"
     });
   }
 };

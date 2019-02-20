@@ -22,4 +22,4 @@ window.addEventListener("keyboardBlur", () => {
 
 ### versions
 
-1.0.0 第一版
+1.0.1 第一版

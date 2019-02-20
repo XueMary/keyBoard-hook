@@ -25,4 +25,4 @@ window.addEventListener("keyboardBlur", () => {
 
 ### versions
 
-1.0.0 the front page
+1.0.1 the front page

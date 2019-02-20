@@ -15,10 +15,10 @@
     }
 
     init() {
+      this.initClick();
       this.initFocus();
       this.initBlur();
       this.initOrientation();
-      this.initClick();
     }
 
     initOrientation() {
@@ -29,23 +29,23 @@
     }
 
     initFocus() {
-      this.resizeF = this.resizeFn(this, this.resizeFocus);
+      this.resizeF = this.resizeF(this, this.resizeFocus);
       window.addEventListener("resize", this.resizeF);
     }
 
     initBlur() {
-      this.resizeB = this.resizeFn(this, this.resizeBlur);
+      this.resizeB = this.resizeB(this, this.resizeBlur);
       window.addEventListener("resize", this.resizeB);
     }
 
     initClick() {
       let _this = this;
-      function changeClick () {
-        clearTimeout(_this.clickTimeOut)
+      function changeClick() {
         _this.isClick = true
+        clearTimeout(_this.clickTimeOut)
         _this.clickTimeOut = setTimeout(() => {
           _this.isClick = false
-        }, 200);
+        }, 500);
       }
       let clickFn = function (e) {
         changeClick();
@@ -64,25 +64,32 @@
               }
             };
             _this.clickFocus();
-            window.addEventListener("click", clickFn);
             window.removeEventListener("resize", _this.resizeF);
             window.removeEventListener("resize", _this.resizeB);
           }
+          else {
+            clickFn = function () {
+              changeClick()
+            };
+          }
+          
+          window.addEventListener("click", clickFn);
         }, 500);
       };
       window.addEventListener("click", clickFn);
     }
 
-    resizeF() { }
-    resizeB() { }
-    resizeFn(_this, fn) {
+    resizeF(_this, fn) {
       return function () {
-        if(_this.isClick){
-          clearTimeout(_this.clickTimeOut)
-          _this.isClick = false
+        if (_this.isClick) {
           fn.call(_this);
         }
-      };
+      }
+    }
+    resizeB(_this, fn) {
+      return function () {
+        fn.call(_this);
+      }
     }
 
     isInput(e) {
@@ -124,13 +131,17 @@
       window.dispatchEvent(this.keyboardBlur);
     }
 
-    resizeFocus() {
+    resizeFocus(e) {
+      const event = e || window.event
       let curHeight = window.innerHeight;
       if (Math.abs(curHeight - this.winHeight) > 80) {
         if (!this.isShowKeyBoard) {
           this.isShowKeyBoard = true;
           this.isResize = true;
+          clearTimeout(this.clickTimeOut)
+          this.isClick = false
           window.dispatchEvent(this.keyboardFocus);
+          event.stopImmediatePropagation()
         }
       }
     }
@@ -142,15 +153,16 @@
           this.isResize = true;
           window.dispatchEvent(this.keyboardBlur);
         }
+        
       }
     }
   }
 
-  function isMobile () {
+  function isMobile() {
     return /(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)
   }
 
-  if(isMobile()){
+  if (isMobile()) {
     new keyboardHook()
   }
 })()
