@@ -17,10 +17,10 @@ export default {
   },
   mounted() {
     window.addEventListener("keyboardFocus", () => {
-      console.log("focus");
+      console.log("keyboardFocus");
     });
     window.addEventListener("keyboardBlur", () => {
-      console.log("blur");
+      console.log("keyboardBlur");
     });
   }
 };
