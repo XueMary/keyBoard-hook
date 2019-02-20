@@ -27,7 +27,7 @@ class keyboardHook {
     this.initFocus();
     this.initBlur();
     this.initOrientation();
-    this.initClickFocus()
+    this.initClick();
   }
 
   initOrientation() {
@@ -38,32 +38,29 @@ class keyboardHook {
   }
 
   initFocus() {
-    const _this = this;
-    this.resizeF = this.resizeFn(this, this.resizeFocus)
-    window.addEventListener("resize", _this.resizeF);
+    this.resizeF = this.resizeFn(this, this.resizeFocus);
+    window.addEventListener("resize", this.resizeF);
   }
 
   initBlur() {
-    const _this = this;
-    this.resizeB = this.resizeFn(this, this.resizeBlur)
+    this.resizeB = this.resizeFn(this, this.resizeBlur);
     window.addEventListener("resize", this.resizeB);
   }
 
-  initClickFocus () {
-    let _this = this
+  initClick() {
+    let _this = this;
     let clickFn = function(e) {
       let isInput = _this.isInput(e);
       if (!isInput) return;
-
-      let timeOuts = null;
-      clearTimeout(timeOuts);
-      timeOuts = setTimeout(function() {
-        window.removeEventListener("click", clickFn);
+      setTimeout(function() {
         if (!_this.isResize) {
-          clickFn = function() {
+          clickFn = function(e) {
             let isInput = _this.isInput(e);
-            if (!isInput) return;
-            _this.clickFocus();
+            if (isInput) {
+              _this.clickFocus();
+            } else {
+              _this.clickBlur();
+            }
           };
           _this.clickFocus();
           window.addEventListener("click", clickFn);
@@ -72,7 +69,7 @@ class keyboardHook {
         }
       }, 500);
     };
-    window.addEventListener("click", clickFn);
+    window.addEventListener("click", clickFn, { once: true });
   }
 
   resizeF() {}
@@ -97,12 +94,13 @@ class keyboardHook {
         return false;
       };
     }
+    
     const isTag = isThunks(this.tagNames);
     const isType = isThunks(this.types);
 
     const event = e || window.event;
     const target = event.target;
-
+    
     const tagName = target.tagName.toLowerCase();
     const type = target.type;
 
@@ -115,7 +113,14 @@ class keyboardHook {
   }
 
   clickFocus() {
-    
+    if(this.isShowKeyBoard) return;
+    this.isShowKeyBoard = true;
+    window.dispatchEvent(this.keyboardFocus);
+  }
+  clickBlur() {
+    if(!this.isShowKeyBoard) return;
+    this.isShowKeyBoard = false;
+    window.dispatchEvent(this.keyboardBlur);
   }
 
   resizeFocus() {
@@ -148,7 +153,7 @@ export default {
   mounted() {
     new keyboardHook();
     window.addEventListener("keyboardFocus", () => {
-      alert("focus");
+      // alert("focus");
     });
     window.addEventListener("keyboardBlur", () => {
       alert("blur");
