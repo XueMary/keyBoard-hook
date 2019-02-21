@@ -42,7 +42,9 @@
           let isInput = _this.isInput(e);
           if (!isInput) return;
           _this.num++
-          _this.clickFocus();
+          _this.clickTimes = setTimeout(() => {
+            _this.clickFocus();
+          }, 500);
         }
         else {
           window.removeEventListener("click", clickFn);
@@ -70,13 +72,17 @@
           _this.isOrienta = false
           return;
         }
+
         if (!_this.isResize) {
           let curHeight = window.innerHeight;
           if (Math.abs(curHeight - _this.winHeight) > _this.navHeight) {
+            clearTimeout(_this.clickTimes)
             _this.isResize = true;
-            return;
+            fn.call(_this);
           }
+          return;
         }
+
         fn.call(_this);
       }
     }
@@ -111,12 +117,12 @@
     clickFocus() {
       if (this.isShowKeyBoard) return;
       this.isShowKeyBoard = true;
-      window.dispatchEvent(this.keyboardFocus);
+      window.dispatchEvent(this.keyboardFocus)
     }
     clickBlur() {
       if (!this.isShowKeyBoard) return;
       this.isShowKeyBoard = false;
-      window.dispatchEvent(this.keyboardBlur);
+      window.dispatchEvent(this.keyboardBlur)
     }
 
     resiFn() {
