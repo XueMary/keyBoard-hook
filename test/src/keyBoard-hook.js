@@ -2,6 +2,7 @@
   class keyboardHook {
     constructor() {
       this.winHeight = window.innerHeight;
+      this.navHeight = screen.availHeight - this.winHeight
       this.tagNames = ["input", "textarea"];
       this.types = ["text", "password", "number"];
       this.keyboardFocus = new Event("keyboardFocus");
@@ -9,15 +10,14 @@
 
       this.isShowKeyBoard = false;
       this.isResize = false;
-      this.isClick = false
-      this.clickTimeOut = null
+      this.isOrienta = false
+      this.num = 0
       this.init();
     }
 
     init() {
       this.initClick();
-      this.initFocus();
-      this.initBlur();
+      this.initResize();
       this.initOrientation();
     }
 
@@ -25,37 +25,29 @@
       let _this = this;
       window.addEventListener("orientationchange", function () {
         _this.winHeight = window.innerHeight;
+        _this.navHeight = screen.availHeight - _this.winHeight
+        _this.isOrienta = true
       });
     }
 
-    initFocus() {
-      this.resizeF = this.resizeF(this, this.resizeFocus);
+    initResize() {
+      this.resizeF = this.resizeF(this, this.resiFn);
       window.addEventListener("resize", this.resizeF);
-    }
-
-    initBlur() {
-      this.resizeB = this.resizeB(this, this.resizeBlur);
-      window.addEventListener("resize", this.resizeB);
     }
 
     initClick() {
       let _this = this;
-      function changeClick() {
-        _this.isClick = true
-        clearTimeout(_this.clickTimeOut)
-        _this.clickTimeOut = setTimeout(() => {
-          _this.isClick = false
-        }, 500);
-      }
       let clickFn = function (e) {
-        changeClick();
-        let isInput = _this.isInput(e);
-        if (!isInput) return;
-        setTimeout(function () {
+        if (_this.num < 1) {
+          let isInput = _this.isInput(e);
+          if (!isInput) return;
+          _this.num++
+          _this.clickFocus();
+        }
+        else {
           window.removeEventListener("click", clickFn);
           if (!_this.isResize) {
             clickFn = function (e) {
-              changeClick()
               let isInput = _this.isInput(e);
               if (isInput) {
                 _this.clickFocus();
@@ -63,31 +55,28 @@
                 _this.clickBlur();
               }
             };
-            _this.clickFocus();
+            clickFn(e);
+            window.addEventListener("click", clickFn);
             window.removeEventListener("resize", _this.resizeF);
-            window.removeEventListener("resize", _this.resizeB);
           }
-          else {
-            clickFn = function () {
-              changeClick()
-            };
-          }
-          
-          window.addEventListener("click", clickFn);
-        }, 500);
+        }
       };
       window.addEventListener("click", clickFn);
     }
 
     resizeF(_this, fn) {
       return function () {
-        if (_this.isClick) {
-          fn.call(_this);
+        if (_this.isOrienta) {
+          _this.isOrienta = false
+          return;
         }
-      }
-    }
-    resizeB(_this, fn) {
-      return function () {
+        if (!_this.isResize) {
+          let curHeight = window.innerHeight;
+          if (Math.abs(curHeight - _this.winHeight) > _this.navHeight) {
+            _this.isResize = true;
+            return;
+          }
+        }
         fn.call(_this);
       }
     }
@@ -108,7 +97,6 @@
 
       const event = e || window.event;
       const target = event.target;
-
       const tagName = target.tagName.toLowerCase();
       const type = target.type;
 
@@ -131,29 +119,27 @@
       window.dispatchEvent(this.keyboardBlur);
     }
 
-    resizeFocus(e) {
-      const event = e || window.event
+    resiFn() {
+      if (this.isShowKeyBoard) {
+        this.resizeBlur()
+      }
+      else {
+        this.resizeFocus()
+      }
+    }
+
+    resizeFocus() {
       let curHeight = window.innerHeight;
-      if (Math.abs(curHeight - this.winHeight) > 80) {
-        if (!this.isShowKeyBoard) {
-          this.isShowKeyBoard = true;
-          this.isResize = true;
-          clearTimeout(this.clickTimeOut)
-          this.isClick = false
-          window.dispatchEvent(this.keyboardFocus);
-          event.stopImmediatePropagation()
-        }
+      if (Math.abs(curHeight - this.winHeight) > this.navHeight) {
+        this.isShowKeyBoard = true;
+        window.dispatchEvent(this.keyboardFocus);
       }
     }
     resizeBlur() {
       let curHeight = window.innerHeight;
-      if (Math.abs(curHeight - this.winHeight) < 80) {
-        if (this.isShowKeyBoard) {
-          this.isShowKeyBoard = false;
-          this.isResize = true;
-          window.dispatchEvent(this.keyboardBlur);
-        }
-        
+      if (Math.abs(curHeight - this.winHeight) < this.navHeight) {
+        this.isShowKeyBoard = false;
+        window.dispatchEvent(this.keyboardBlur);
       }
     }
   }

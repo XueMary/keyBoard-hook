@@ -3,7 +3,7 @@ import buble from 'rollup-plugin-buble'; // Transpile/polyfill with reasonable b
 import {uglify} from 'rollup-plugin-uglify';
 
 export default {
-    input: 'src/index.js', // Path relative to package.json
+    input: 'test/src/keyBoard-hook.js', // Path relative to package.json
     output: {
         name: 'index',
         exports: 'named',
