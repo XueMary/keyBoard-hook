@@ -37,6 +37,10 @@
 
     initClick() {
       let _this = this;
+      const touchFn = function(){
+        document.activeElement.blur();
+        _this.clickBlur();
+      }
       let clickFn = function (e) {
         if (_this.num < 1) {
           let isInput = _this.isInput(e);
@@ -44,6 +48,7 @@
           _this.num++
           _this.clickTimes = setTimeout(() => {
             _this.clickFocus();
+            window.addEventListener("touchmove", touchFn, {once:true});
           }, 500);
         }
         else {
@@ -53,8 +58,7 @@
               let isInput = _this.isInput(e);
               if (isInput) {
                 _this.clickFocus();
-              } else {
-                _this.clickBlur();
+                window.addEventListener("touchmove", touchFn, {once:true});
               }
             };
             clickFn(e);
